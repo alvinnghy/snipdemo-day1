@@ -1,0 +1,6 @@
+{
+  "name": "snip-bundle",
+  "scripts": {
+    "start": "bun server.js"
+  }
+}
