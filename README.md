@@ -78,3 +78,18 @@ git push
 Repeat with `frontend` or `cli` as appropriate. The submodule commit and the
 superproject pointer update are separate commits; the pointer records the exact
 component revision used by this checkout.
+
+## Generated release bundle
+
+`bundle/` is generated output; do not edit its files by hand. To rebuild it from
+the current source branch tips:
+
+```sh
+node scripts/build-bundle.mjs
+node scripts/build-bundle.mjs --push
+```
+
+The script builds the Angular app, assembles the Bun server, static UI, and CLI
+into the `bundle` submodule, then updates the pinned source and bundle commits.
+`--push` publishes the generated `bundle` and `main` branches. The `bundle`
+branch contains the Docker and Railway configuration used for releases.
