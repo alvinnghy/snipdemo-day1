@@ -1,0 +1,86 @@
+<main class="page">
+  <header class="hero">
+    <a class="wordmark" href="/" aria-label="Snip home">snip<span>.</span></a>
+    <p class="eyebrow">A little link, a lot less URL</p>
+    <h1>Make links <span>shorter.</span></h1>
+    <p class="intro">Turn a long URL into a neat little link you can share anywhere.</p>
+  </header>
+
+  <section class="shortener" aria-labelledby="shorten-heading">
+    <h2 id="shorten-heading" class="visually-hidden">Shorten a link</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="visually-hidden" for="url">Your destination URL</label>
+      <div class="input-row">
+        <input
+          id="url"
+          type="url"
+          formControlName="url"
+          placeholder="Paste a long link here…"
+          autocomplete="url"
+          inputmode="url"
+          [attr.aria-describedby]="form.controls.url.touched && form.controls.url.hasError('httpUrl') ? 'url-hint url-error' : 'url-hint'"
+          [attr.aria-invalid]="form.controls.url.invalid && form.controls.url.touched"
+        />
+        <button type="submit" [disabled]="isSubmitting() || form.controls.url.pending">
+          {{ isSubmitting() ? 'Shortening…' : 'Shorten link' }}
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <p id="url-hint" class="hint">Use a full address that starts with http:// or https://</p>
+      @if (form.controls.url.touched && form.controls.url.hasError('httpUrl')) {
+        <p id="url-error" class="field-error" role="alert">Enter a valid HTTP or HTTPS URL.</p>
+      }
+    </form>
+
+    @if (formError()) {
+      <p class="notice notice-error" role="alert">{{ formError() }}</p>
+    }
+    @if (createdLink(); as link) {
+      <div class="notice notice-success" role="status" aria-live="polite">
+        <span>Here’s your shorter link</span>
+        <a [href]="link.shortUrl">{{ link.shortUrl }}</a>
+      </div>
+    }
+  </section>
+
+  <section class="links-section" aria-labelledby="links-heading">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Your collection</p>
+        <h2 id="links-heading">Recent links</h2>
+      </div>
+      <span class="link-count">{{ links().length }} {{ links().length === 1 ? 'link' : 'links' }}</span>
+    </div>
+
+    @if (isLoading()) {
+      <p class="table-message" role="status" aria-live="polite">Loading your links…</p>
+    } @else if (listError()) {
+      <p class="table-message notice-error" role="alert">{{ listError() }}</p>
+    } @else if (links().length === 0) {
+      <p class="table-message">No links yet. Your first short link will show up here.</p>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Short link</th>
+              <th scope="col">Original URL</th>
+              <th scope="col" class="hits-column">Hits</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (link of links(); track link.code) {
+              <tr>
+                <td><a class="short-link" [href]="link.shortUrl">{{ link.shortUrl }}</a></td>
+                <td class="original-url">{{ link.url }}</td>
+                <td class="hits-column">{{ link.hits }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <footer>Short links, made simple.</footer>
+</main>
